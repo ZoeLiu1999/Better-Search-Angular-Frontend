@@ -1,0 +1,217 @@
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-11 col-sm-9 bg-dark mt-3 mt-sm-0 rounded">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12 col-sm-7 text-white">
+            <div class="col-12">
+              <p class="fs-3 my-4">Product Search</p>
+            </div>
+
+            <form class="col-12" [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+
+              <div class="mb-3 row form-group">
+                <label class="col-sm-3 col-form-label">Keyword<span style="color: red">*</span></label>
+                <div class="col-sm-7">
+                  <input type="text" class="form-control" [ngClass]="{'is-invalid': !searchForm.get('keywords').valid && searchForm.get('keywords').touched}"
+                  formControlName="keywords" placeholder="Enter Product Name (e.g., iPhone 8)">
+                  <div class="invalid-feedback">
+                    Please enter a keyword.
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row form-group">
+                <label class="col-sm-3 col-form-label">Category</label>
+                <div class="col-sm-6">
+                  <div class="col-sm-5">
+                    <select name="category" formControlName="category" class="form-select">
+                      <option *ngFor="let category of categoryNames" [value]="categoryValue[category]">{{ category }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row form-group" formArrayName="condition">
+                <label class="col-sm-3 col-form-label">Condition</label>
+                <div class="col-sm-6 d-flex align-items-center">
+                  <div *ngFor="let condition of conditionOptions; let i = index" class="form-check form-check-inline px-0">
+                    <input type="checkbox" [formControlName]="i" [value]="condition.id"/>
+                    <label class="mx-2">{{ condition.label }}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3 row form-group">
+                <label class="col-sm-3 col-form-label">Shipping Options</label>
+                <div class="col-sm-6 d-flex align-items-center">
+                  <div class="form-check form-check-inline px-0">
+                    <input type="checkbox" formControlName="local_pickUp" /> <label class="mx-2">Local Pickup</label>
+                    <input type="checkbox" formControlName="free_shipping" /> <label class="mx-2">Free Shipping</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row form-group">
+                <label class="col-sm-3 col-form-label">Distance(Miles)</label>
+                <div class="col-sm-6">
+                  <div class="col-sm-5">
+                    <input type="number" formControlName="distance" class="form-control"  placeholder="10"/>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row form-group">
+                <label class="col-sm-3 col-form-label">From<span style="color: red">*</span></label>
+                <div class="col-sm-6">
+                  <div class="form-check px-0">
+                    <input class="custom-control-input" type="radio" formControlName="useCurrentLocation" value="true">
+                    <label class="form-check-label mx-2">Current Location</label>
+                  </div>
+                  <div class="form-check px-0">
+                    <input class="custom-control-input" type="radio" formControlName="useCurrentLocation" value="false">
+                    <label class="form-check-label mx-2">Other. Please specify zip code:</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row form-group">
+                <div class="col-sm-3 .d-none .d-sm-block"></div>
+                <div class="col-sm-7">
+                  <input type="text" class="form-control"
+                         [ngClass]="{'is-invalid': searchForm.get('useCurrentLocation').value === 'false' && searchForm.get('customZip').value.trim().length !== 5&& searchForm.get('customZip').touched}"
+                         formControlName="customZip"
+                         (input)="onCustomZipInput()"
+                         [matAutocomplete]="auto" matInput>
+                  <div class="invalid-feedback">
+                    Please enter a zip code.
+                  </div>
+                </div>
+              </div>
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let suggestion of ZipSuggestions" [value]="suggestion">
+                  {{ suggestion }}
+                </mat-option>
+              </mat-autocomplete>
+              <div class="mb-3 row form-group">
+                <div class="col-12 d-flex">
+                  <button type="submit" class="btn btn-light d-flex align-items-center justify-content-center me-3 px-3"
+                    [disabled]="(searchForm.get('useCurrentLocation').value === 'false'&&searchForm.get('customZip').value.trim().length !== 5)||searchForm.get('keywords').value.trim().length==0">
+                    <span class="material-symbols-outlined">search</span>Search
+                  </button>
+                  <button type="button"  class="btn btn-light d-flex align-items-center justify-content-center px-3"  (click)="clearForm()">
+                    <span class="material-symbols-outlined mx-1">clear_all</span>Clear
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 d-flex justify-content-center">
+      <button (click)="changeToResult()" type="button" class="btn my-3 me-2 px-4" [ngClass]="{'btn-dark': showResult, 'btn-light': !showResult}">Results</button>
+      <button (click)="changeToWishList()" type="button" class="btn my-3 px-4" [ngClass]="{'btn-dark': showWishList, 'btn-light': !showWishList}">Wish List</button>
+    </div>
+    <div class="col-12 col-sm-10 d-flex justify-content-center" *ngIf="loading">
+      <div class="progress" style="width: 95%;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ progress }}%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-11 col-sm-9">
+    <app-no-result *ngIf="(isResult&&(result==null)&&showResult)" class=""></app-no-result>
+  </div>
+</div>
+
+
+<div *ngIf="isResult&&result!=null&&showResult" class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 col-sm-10 d-flex justify-content-end">
+      <button type="button" [disabled]="checkPresent()"
+              class="btn btn-light d-flex align-items-center justify-content-center p-2 my-3 mx-sm-4"
+              (click)="onDetail()">
+        Detail
+        <span class="material-symbols-outlined">arrow_forward_ios</span>
+      </button>
+    </div>
+
+
+
+    <div class="col-11 col-sm-9">
+<div class="table-container">
+    <table class="table table-striped table-dark table-hover">
+      <thead>
+      <tr>
+        <th  style="width: 5%;">#</th>
+        <th  style="width: 15%;">Image</th>
+        <th  style="width: 40%;">Title</th>
+        <th  style="width: 10%;">Price</th>
+        <th  style="width: 12%;">Shipping</th>
+        <th  style="width: 9%;">Zip</th>
+        <th  style="width: 9%;">Wish List</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of result | paginate: { itemsPerPage: 10, currentPage: currentPage } let i = index" [ngClass]="{ 'table-secondary': lastOpenItem === item }" class="mt-2">
+        <td>{{ (currentPage-1)*10+i+1 }}</td>
+        <td>
+          <a [href]="item.galleryURL" target="_blank">
+            <img [src]="item.galleryURL" width="100" height="100">
+          </a>
+        </td>
+        <td><a
+          [matTooltip]="item.title"
+          [matTooltipPosition]="'below'"
+          (click)="onItemClick(item)">
+          {{ item.title[0].length > 35 ? item.title[0].substring(0,item.title[0].lastIndexOf(' ',35))+'...' : item.title }}
+        </a>
+        </td>
+        <td>{{ "$"+ item.sellingStatus[0].currentPrice[0].__value__ }}</td>
+        <td>{{ checkShippingCost(item) }}</td>
+        <td>{{ item.postalCode }}</td>
+        <td><ng-container *ngIf="isInWishList(item); else addWishList">
+          <button class="btn btn-light d-flex align-items-center justify-content-center" (click)="onRemoveWishList(item)">
+            <span class="material-icons" style="color:darkgoldenrod">remove_shopping_cart</span>
+          </button>
+        </ng-container>
+          <ng-template #addWishList>
+            <button class="btn btn-light d-flex align-items-center justify-content-center" (click)="onWishList(item)">
+              <span class="material-icons">add_shopping_cart</span>
+            </button>
+          </ng-template></td>
+
+      </tr>
+      </tbody>
+    </table>
+</div>
+    </div>
+
+
+    <div class="col-12 m-3">
+  <div class="page-control">
+    <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+  </div>
+    </div>
+  </div>
+</div>
+
+<app-wish-list *ngIf="showWishList" [currentWishList]="currentWishList" (removeFromWishList)="onRemoveWishList1($event)" (addToWishList)="onWishList1($event)"></app-wish-list>
+
+
+<app-detail *ngIf="isDetail&&showResult" [itemDetail]="itemDetail" [photosearchList]="photosearchList" [itemInfo]="itemInfo" [similarProduct] = "similarProduct"
+            [currentWishList]="currentWishList"
+            (changeState)="onListClick()" (addItemTowishList)="onWishList($event)" (removeItemFromwishList)="onRemoveWishList($event)"></app-detail>
+
+
+
+
+
+

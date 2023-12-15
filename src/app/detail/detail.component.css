@@ -1,0 +1,94 @@
+.custom-tab
+.show-text{
+  font-size: 14px;
+}
+
+
+.shopping-cart{
+  font-size: 25px;
+}
+
+.product-image {
+  height: 165px;
+  width:165px;
+}
+
+a {
+  text-decoration: none;
+}
+#facebook-share-image{
+  width: 100%;
+}
+@media (min-width: 576px) {
+  .show-text
+  .custom-tab
+  .shopping-cart
+  {
+    font-size: inherit
+  }
+  #facebook-share-image{
+    width: 75%;
+  }
+}
+
+.photos{
+  border: 8px solid #3a3939;
+}
+
+.custom-tab {
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.custom-tab.active {
+  border: 1px solid #ddd;
+  border-radius: 5px 5px 0 0;
+  background-color: rgba(0, 0, 0, 0.82);
+  color: white;
+}
+
+
+.img-with-border {
+  border: 2px solid rgba(0, 0, 0, 0.84);
+}
+
+
+.green-icon {
+  color: green;
+}
+
+.red-icon {
+  color: red;
+}
+
+.progress-overlay {
+  position: relative;
+  width: 35px; /* Set a width for the container as needed */
+  height: 35px; /* Set a height for the container as needed */
+}
+
+.percentage,
+round-progress {
+  font-size: x-small;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.percentage {
+  z-index: 1; /* To make it appear above round-progress */
+}
+
+.center-text {
+  text-align: center;
+}
+
+
+

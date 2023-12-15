@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <h6 class="modal-title" id="exampleModalLabel">Product Images</h6>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="modalRef.close()"
+  ></button>
+</div>
+<div class="modal-body"><mdb-carousel [controls]="list.length>1" [dark]="true">
+  <mdb-carousel-item *ngFor = "let img of list" [interval]="10000000">
+      <a [href]="img" target="_blank">
+        <img
+          src={{img}}
+          class="d-block w-100"
+          alt="..."
+          style="border: 10px solid rgba(0,0,0,0.8); border-radius: 10px;"
+        /> </a>
+  </mdb-carousel-item>
+</mdb-carousel></div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modalRef.close()">
+    Close
+  </button>
+</div>

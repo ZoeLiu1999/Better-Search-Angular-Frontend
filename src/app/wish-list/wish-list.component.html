@@ -1,0 +1,80 @@
+
+
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 col-sm-10 d-flex justify-content-center" *ngIf="loading">
+      <div class="progress" style="width: 95%;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ progress }}%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-wish-list-detail *ngIf="isDetail" [itemDetail]="itemDetail" [photosearchList]="photosearchList" [itemInfo]="itemInfo" [similarProduct] = "similarProduct"
+                      (changeState)="onListClick()" (addItemTowishList)="onWishList($event)" (removeItemFromwishList)="onRemoveWishList($event)"></app-wish-list-detail>
+
+
+
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 col-sm-10 d-flex justify-content-end">
+      <button type="button" *ngIf="!isDetail"  [disabled]="checkPresent()"
+              class="btn btn-light d-flex align-items-center justify-content-center p-2 my-3 mx-sm-4"
+              (click)="onDetail()">
+        Detail
+        <span class="material-symbols-outlined">arrow_forward_ios</span>
+      </button>
+    </div>
+
+    <div class="col-11 col-sm-9">
+      <app-no-result *ngIf="currentWishList==0" class=""></app-no-result>
+    </div>
+
+
+    <div *ngIf="!isDetail&&currentWishList.length>0" class="col-11 col-sm-9">
+      <div class="table-container">
+        <table class="table table-striped table-dark table-hover">
+          <thead>
+          <tr>
+            <th  style="width: 5%;">#</th>
+            <th  style="width: 15%;">Image</th>
+            <th  style="width: 40%;">Title</th>
+            <th  style="width: 15%;">Price</th>
+            <th  style="width: 15%;">Shipping Option</th>
+            <th  style="width: 10%;">Favorite</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of currentWishList; let i = index" [ngClass]="{ 'table-secondary': lastOpenItem === item }">
+            <td>{{i+1}}</td>
+            <td>
+              <a [href]="item.galleryURL" target="_blank">
+                <img [src]="item.galleryURL" width="100" height="100">
+              </a>
+            </td>
+            <td><a
+              [matTooltip]="item.title"
+              [matTooltipPosition]="'below'"
+              (click)="onItemClick(item)">
+              {{ item.title.length > 35 ? item.title.substring(0,item.title.lastIndexOf(' ',35))+'...' : item.title }}
+            </a>
+            </td>
+            <td>{{ item.price ? "$"+item.price : "N/A" }}</td>
+            <td>{{ checkShippingCost(item) }}</td>
+            <td>
+              <button class="btn btn-light" (click)="onRemoveWishList(item)">
+                <span class="material-icons" style="color:darkgoldenrod">remove_shopping_cart</span>
+              </button>  </td>
+          </tr>
+          <tr>
+            <td colspan="4"></td>
+            <td><strong>Total Shopping</strong></td>
+            <td>{{ calculateTotalPrice()}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

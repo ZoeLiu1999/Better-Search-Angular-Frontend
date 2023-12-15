@@ -1,0 +1,14 @@
+.table-container {
+  overflow-x: auto;   /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent text wrapping */
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS devices */
+  min-width: 100%; /* Ensures that the table is at least as wide as the viewport */
+}
+
+table{
+  min-width: 1000px;
+}
+
+a{
+  text-decoration: none;
+}
